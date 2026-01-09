@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router'; // ✅ Correct import
+import { Link } from 'react-router';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);

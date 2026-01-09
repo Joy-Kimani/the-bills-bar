@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AdminDashboardLayout from "../../dashboard/AdminDashboardLayout";
-import { Trash2, Shield, User, MoreVertical } from "lucide-react"; // Optional icons
+import { Trash2 } from "lucide-react"; // Optional icons
 
 interface Staff {
   id: number;

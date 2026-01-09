@@ -52,6 +52,7 @@ export interface AdminDashboardStats {
     totalRevenue: number;
     totalMenuItems: number;
     totalReservations: number;
+    todaysOrders: [];
 }
 
 export interface UserStats {

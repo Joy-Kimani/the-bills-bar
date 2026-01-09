@@ -5,7 +5,6 @@ import {
   Clock,
   Phone,
   User,
-  Clock3,
   Search,
   CheckCircle2,
   XCircle,
@@ -26,28 +25,28 @@ interface Reservation {
 const MOCK_RESERVATIONS: Reservation[] = [
   {
     id: 1,
-    table_name: "VIP Table 01",
+    table_name: "VIP Table I",
     customer_name: "John Doe",
     phone: "+254712345678",
     reservation_date: "2026-01-12",
-    time_slot: "20:00 - 23:00",
+    time_slot: "20:00 – 23:00",
     status: "PENDING",
   },
   {
     id: 2,
-    table_name: "Standard Table 04",
+    table_name: "Standard IV",
     customer_name: "Sarah W.",
     phone: "+254798654321",
     reservation_date: "2026-01-12",
-    time_slot: "19:00 - 22:00",
+    time_slot: "19:00 – 22:00",
     status: "CONFIRMED",
   },
 ];
 
-const statusStyles: Record<Status, string> = {
-  PENDING: "border-amber-500/50 text-amber-500 bg-amber-500/5",
-  CONFIRMED: "border-emerald-500/50 text-emerald-500 bg-emerald-500/5",
-  EXPIRED: "border-rose-500/50 text-rose-500 bg-rose-500/5",
+const STATUS_STYLES: Record<Status, string> = {
+  PENDING: "border-[#d4af37]/40 text-[#d4af37] bg-[#d4af37]/5",
+  CONFIRMED: "border-emerald-500/40 text-emerald-400 bg-emerald-500/5",
+  EXPIRED: "border-rose-500/40 text-rose-400 bg-rose-500/5",
 };
 
 const ReservedTables: React.FC = () => {
@@ -56,131 +55,129 @@ const ReservedTables: React.FC = () => {
   const [filter, setFilter] = useState<"ALL" | Status>("ALL");
   const [search, setSearch] = useState("");
 
-  /* ------------------ Load (mock API) ------------------ */
+  /* Load mock data */
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const t = setTimeout(() => {
       setReservations(MOCK_RESERVATIONS);
       setLoading(false);
     }, 800);
-    return () => clearTimeout(timer);
+    return () => clearTimeout(t);
   }, []);
 
-  /* ------------------ Auto-expire simulation ------------------ */
+  /* Auto-expire simulation */
   useEffect(() => {
-    const interval = setInterval(() => {
-      setReservations((prev) =>
-        prev.map((r) =>
+    const i = setInterval(() => {
+      setReservations(prev =>
+        prev.map(r =>
           r.status === "PENDING" ? { ...r, status: "EXPIRED" } : r
         )
       );
-    }, 1000 * 60 * 10); // every 10 minutes (demo-safe)
-
-    return () => clearInterval(interval);
+    }, 1000 * 60 * 10);
+    return () => clearInterval(i);
   }, []);
 
-  /* ------------------ Actions ------------------ */
   const updateStatus = (id: number, status: Status) => {
-    setReservations((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status } : r))
+    setReservations(prev =>
+      prev.map(r => (r.id === id ? { ...r, status } : r))
     );
   };
 
-  /* ------------------ Filter + Search ------------------ */
-  const filteredReservations = useMemo(() => {
-    return reservations.filter((r) => {
-      const matchesFilter = filter === "ALL" || r.status === filter;
-      const matchesSearch =
+  const filtered = useMemo(() => {
+    return reservations.filter(r => {
+      const f = filter === "ALL" || r.status === filter;
+      const s =
         r.customer_name.toLowerCase().includes(search.toLowerCase()) ||
         r.phone.includes(search) ||
         r.table_name.toLowerCase().includes(search.toLowerCase());
-
-      return matchesFilter && matchesSearch;
+      return f && s;
     });
   }, [reservations, filter, search]);
 
-  /* ------------------ Stats ------------------ */
   const stats = {
     ALL: reservations.length,
-    PENDING: reservations.filter((r) => r.status === "PENDING").length,
-    CONFIRMED: reservations.filter((r) => r.status === "CONFIRMED").length,
+    PENDING: reservations.filter(r => r.status === "PENDING").length,
+    CONFIRMED: reservations.filter(r => r.status === "CONFIRMED").length,
   };
 
   return (
     <AdminDashboardLayout>
-      <div className="p-8 max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto px-8 py-10 text-white">
+
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-10">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">
-              Reserved Tables
+            <p className="text-[#d4af37] tracking-[0.4em] text-xs uppercase mb-2">
+              Bills Lounge & Grill
+            </p>
+            <h1 className="text-4xl font-light italic">
+              Reserved <span className="text-[#d4af37] font-bold">Tables</span>
             </h1>
-            <p className="text-gray-400 mt-1">
-              Live reservation monitoring & control
+            <p className="text-gray-500 mt-2 text-sm">
+              Live VIP & Standard table oversight
             </p>
           </div>
 
           {/* Search */}
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#d4af37]/70" size={16} />
             <input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search name, phone, table"
-              className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search guest, table, phone"
+              className="w-full bg-black/40 border border-white/10 rounded-full pl-11 pr-4 py-2 text-sm focus:outline-none focus:border-[#d4af37]/60"
             />
           </div>
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2 mb-6">
-          {(["ALL", "PENDING", "CONFIRMED"] as const).map((f) => (
+        <div className="flex gap-3 mb-10">
+          {(["ALL", "PENDING", "CONFIRMED"] as const).map(f => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition
+              className={`px-6 py-2 rounded-full text-xs tracking-widest uppercase transition
                 ${
                   filter === f
-                    ? "bg-indigo-600 text-white"
-                    : "bg-gray-900 text-gray-400 hover:text-white border border-gray-800"
+                    ? "bg-[#d4af37] text-black font-bold"
+                    : "border border-white/10 text-gray-400 hover:text-white"
                 }`}
             >
-              {f} ({stats[f]})
+              {f} · {stats[f]}
             </button>
           ))}
         </div>
 
         {/* Content */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-pulse">
-            {[1, 2].map((i) => (
-              <div key={i} className="h-44 bg-gray-900/50 rounded-xl border border-gray-800" />
+          <div className="grid md:grid-cols-2 gap-6 animate-pulse">
+            {[1, 2].map(i => (
+              <div key={i} className="h-48 bg-white/5 rounded-3xl" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredReservations.map((r) => (
+          <div className="grid md:grid-cols-2 gap-8">
+            {filtered.map(r => (
               <div
                 key={r.id}
-                className={`relative bg-gray-900 border-l-4 rounded-xl p-6 transition hover:shadow-xl ${statusStyles[r.status]}`}
+                className={`relative p-8 rounded-3xl border-l-4 bg-gradient-to-br from-black via-[#0f0f0f] to-black ${STATUS_STYLES[r.status]}`}
               >
-                {/* Header */}
-                <div className="flex justify-between items-start mb-4">
+                {/* Top */}
+                <div className="flex justify-between mb-6">
                   <div>
-                    <h3 className="text-xl font-bold text-white uppercase">
+                    <h3 className="text-xl font-bold uppercase tracking-wide">
                       {r.table_name}
                     </h3>
-                    <div className="flex items-center gap-2 text-gray-300 mt-1">
-                      <User size={14} className="text-indigo-400" />
-                      {r.customer_name}
-                    </div>
+                    <p className="flex items-center gap-2 text-gray-400 mt-2">
+                      <User size={14} /> {r.customer_name}
+                    </p>
                   </div>
 
                   <select
                     value={r.status}
-                    onChange={(e) =>
+                    onChange={e =>
                       updateStatus(r.id, e.target.value as Status)
                     }
-                    className="bg-gray-800 border border-gray-700 text-xs rounded-md px-3 py-1 font-bold"
+                    className="bg-black border border-white/20 rounded-full px-4 py-1 text-xs tracking-widest"
                   >
                     <option value="PENDING">PENDING</option>
                     <option value="CONFIRMED">CONFIRMED</option>
@@ -189,33 +186,33 @@ const ReservedTables: React.FC = () => {
                 </div>
 
                 {/* Details */}
-                <div className="grid grid-cols-2 gap-y-3 pt-4 border-t border-gray-800/50 text-sm text-gray-400">
+                <div className="grid grid-cols-2 gap-y-4 text-sm text-gray-400 border-t border-white/10 pt-6">
                   <div className="flex items-center gap-2">
                     <Calendar size={14} /> {r.reservation_date}
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock size={14} /> {r.time_slot}
                   </div>
-                  <div className="flex items-center gap-2 col-span-2">
+                  <div className="col-span-2 flex items-center gap-2">
                     <Phone size={14} />
-                    <a href={`tel:${r.phone}`} className="hover:text-indigo-400">
+                    <a href={`tel:${r.phone}`} className="hover:text-[#d4af37]">
                       {r.phone}
                     </a>
                   </div>
                 </div>
 
-                {/* Quick actions */}
+                {/* Actions */}
                 {r.status === "PENDING" && (
-                  <div className="flex gap-2 mt-4">
+                  <div className="flex gap-3 mt-6">
                     <button
                       onClick={() => updateStatus(r.id, "CONFIRMED")}
-                      className="flex items-center gap-1 px-3 py-1 text-xs rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                      className="flex items-center gap-2 px-4 py-2 rounded-full text-xs tracking-widest uppercase border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10"
                     >
                       <CheckCircle2 size={14} /> Confirm
                     </button>
                     <button
                       onClick={() => updateStatus(r.id, "EXPIRED")}
-                      className="flex items-center gap-1 px-3 py-1 text-xs rounded bg-rose-500/10 text-rose-400 border border-rose-500/30"
+                      className="flex items-center gap-2 px-4 py-2 rounded-full text-xs tracking-widest uppercase border border-rose-500/40 text-rose-400 hover:bg-rose-500/10"
                     >
                       <XCircle size={14} /> Expire
                     </button>
@@ -231,5 +228,3 @@ const ReservedTables: React.FC = () => {
 };
 
 export default ReservedTables;
-
-

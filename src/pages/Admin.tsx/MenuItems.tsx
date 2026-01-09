@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import AdminDashboardLayout from "../../dashboard/AdminDashboardLayout";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { FileDown, Star, Search, Plus, MoreVertical, Utensils } from "lucide-react";
+import { FileDown, Star, Search, Plus, Utensils } from "lucide-react";
 import { toast } from "sonner";
 
 interface MenuItem {

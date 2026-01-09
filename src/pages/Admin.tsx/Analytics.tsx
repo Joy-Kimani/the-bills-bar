@@ -1,8 +1,6 @@
 import React from "react";
 import AdminDashboardLayout from "../../dashboard/AdminDashboardLayout";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   Tooltip,

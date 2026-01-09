@@ -128,7 +128,8 @@ const Overview: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {stats?.recentOrders?.map((order: any) => (
+                  {/* {change this } */}
+                  {stats?.todaysOrders?.map((order: any) => (
                     <tr
                       key={order.id}
                       className="border-b border-zinc-800 hover:bg-black/40"

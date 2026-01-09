@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router';
+import { Link } from 'react-router'; // ✅ Correct import
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,11 +13,6 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="relative z-30 flex justify-between items-center px-6 md:px-10 py-8 bg-transparent">
-      {/* Logo / Brand */}
-      {/* <h2 className="text-xl md:text-2xl font-bold tracking-[0.3em] uppercase text-white">
-        Bills Lounge & Grill
-      </h2> */}
-
       {/* Desktop Links */}
       <div className="hidden md:flex space-x-8 text-sm uppercase tracking-widest font-sans opacity-80">
         {navLinks.map((link) => (

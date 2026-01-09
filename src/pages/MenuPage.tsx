@@ -1,14 +1,10 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster, toast } from "sonner";
-import { Menu, X, ShoppingBag, AlertCircle, Loader2 } from "lucide-react";
+import { Wine, Loader2, X, AlertCircle, Trash2, ChevronRight } from "lucide-react";
 
 /* ---------- TYPES ---------- */
-
-type Category =
-  | "Breakfast" | "Soups" | "Meat" | "Chicken" | "Platters"
-  | "Fish & Steak" | "Beers" | "Cocktails" | "Soft Drinks" | "Wines";
-
+type Category = "Breakfast" | "Soups" | "Meat" | "Chicken" | "Platters" | "Fish & Steak" | "Beers" | "Cocktails" | "Soft Drinks" | "Wines";
 type OrderMode = "KITCHEN" | "BAR";
 type ItemType = "FOOD" | "DRINK";
 
@@ -26,235 +22,156 @@ interface OrderItem extends MenuItem {
 }
 
 /* ---------- DATA ---------- */
-
 const MENU_ITEMS: MenuItem[] = [
-  { id: "bf1", name: "English Breakfast", price: 1200, category: "Breakfast", type: "FOOD", image: "https://images.unsplash.com/photo-1588625436591-c6d853288b60?q=80&w=729&auto=format&fit=crop" },
-  { id: "mt1", name: "Goat Meat (½ KG)", price: 700, category: "Meat", type: "FOOD", image: "https://images.unsplash.com/photo-1603048297172-c92544798d5a?q=80&w=500&auto=format&fit=crop" },
-  { id: "pl1", name: "BBQ Platter", price: 2700, category: "Platters", type: "FOOD", image: "https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=500&auto=format&fit=crop" },
-  { id: "dr1", name: "Tusker Lager", price: 400, category: "Beers", type: "DRINK", image: "https://images.unsplash.com/photo-1618885472179-5e474019f2a9?q=80&w=500&auto=format&fit=crop" },
-  { id: "dr2", name: "Classic Mojito", price: 850, category: "Cocktails", type: "DRINK", image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=500&auto=format&fit=crop" },
-  { id: "dr3", name: "Red Wine (Glass)", price: 600, category: "Wines", type: "DRINK", image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=500&auto=format&fit=crop" },
+  { id: "bf1", name: "English Breakfast", price: 1200, category: "Breakfast", type: "FOOD", image: "https://images.unsplash.com/photo-1588625436591-c6d853288b60?q=80&w=800" },
+  { id: "mt1", name: "Goat Meat (½ KG)", price: 700, category: "Meat", type: "FOOD", image: "https://images.unsplash.com/photo-1603048297172-c92544798d5a?q=80&w=800" },
+  { id: "pl1", name: "BBQ Platter", price: 2700, category: "Platters", type: "FOOD", image: "https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=800" },
+  { id: "dr1", name: "Tusker Lager", price: 400, category: "Beers", type: "DRINK", image: "https://images.unsplash.com/photo-1618885472179-5e474019f2a9?q=80&w=800" },
+  { id: "dr2", name: "Classic Mojito", price: 850, category: "Cocktails", type: "DRINK", image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=800" },
 ];
-
-/* ---------- COMPONENT ---------- */
 
 const MenuPage: React.FC = () => {
   const [mode, setMode] = useState<OrderMode>("KITCHEN");
   const [activeCategory, setActiveCategory] = useState<Category>("Breakfast");
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [showReceipt, setShowReceipt] = useState(false);
-  const [goldTheme, setGoldTheme] = useState(true);
-  const [isNavOpen, setIsNavOpen] = useState(false);
-
-  // States for Loading and Errors
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  /* ---------- INITIAL FETCH SIMULATION ---------- */
+  // 1. FIXED LOADING: Ensure loading state clears correctly
   useEffect(() => {
-    const loadMenu = async () => {
-      try {
-        setLoading(true);
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        // Randomly simulate an error for demo purposes (comment out to test success)
-        // if (Math.random() > 0.9) throw new Error("Failed to load menu items.");
-        setError(null);
-      } catch (err) {
-        setError("Unable to load the menu. Please check your connection.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadMenu();
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
   }, []);
 
-  const categories = useMemo(
+  /* ---------- CATEGORIES LOGIC ---------- */
+  const categories = useMemo<Category[]>(
     () => (mode === "KITCHEN"
-        ? ["Breakfast", "Soups", "Meat", "Chicken", "Platters", "Fish & Steak"]
-        : ["Beers", "Cocktails", "Soft Drinks", "Wines"]) as Category[],
+      ? ["Breakfast", "Soups", "Meat", "Chicken", "Platters", "Fish & Steak"]
+      : ["Beers", "Cocktails", "Soft Drinks", "Wines"]),
     [mode]
   );
 
-  useEffect(() => {
-    setActiveCategory(categories[0]);
+  useEffect(() => { 
+    setActiveCategory(categories[0]); 
   }, [categories]);
 
   const items = useMemo(
-    () => MENU_ITEMS.filter((i) => i.category === activeCategory && (mode === "BAR" ? i.type === "DRINK" : i.type === "FOOD")),
+    () => MENU_ITEMS.filter(
+      i => i.category === activeCategory && i.type === (mode === "BAR" ? "DRINK" : "FOOD")
+    ),
     [activeCategory, mode]
   );
 
-  /* ---------- LOGIC ---------- */
+  // 2. ITEM NOT FOUND NOTIFICATION: Triggered when a category is empty
+  useEffect(() => {
+    if (!loading && items.length === 0) {
+      toast.error(`Category Unavailable`, {
+        description: `${activeCategory} is not available at the moment.`,
+        icon: <AlertCircle className="text-red-500" size={20} />,
+        duration: 3000,
+      });
+    }
+  }, [activeCategory, items.length, loading]);
 
+  /* ---------- ORDER LOGIC ---------- */
   const addItem = (item: MenuItem) => {
-    setOrderItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
-      return existing ? prev.map((i) => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i) : [...prev, { ...item, quantity: 1 }];
+    setOrderItems(prev => {
+      const found = prev.find(i => i.id === item.id);
+      return found 
+        ? prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i)
+        : [...prev, { ...item, quantity: 1 }];
     });
     toast.success(`Added ${item.name}`);
   };
 
   const removeItem = (id: string) => {
-    setOrderItems((prev) => prev.map((i) => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter((i) => i.quantity > 0));
+    setOrderItems(prev => prev.map(i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0));
   };
 
   const total = orderItems.reduce((s, i) => s + i.price * i.quantity, 0);
-  const drinkTotal = orderItems.filter((i) => i.type === "DRINK").reduce((s, i) => s + i.price * i.quantity, 0);
 
+  // 3. ENHANCED ERROR HANDLING: Added try/catch for the payment process
   const confirmOrder = async () => {
-    if (mode === "BAR" && drinkTotal > 0 && drinkTotal < 2500) {
-      toast.error("Minimum bar spend is KES 2,500");
-      return;
-    }
-    setProcessing(true);
     try {
-      await new Promise((r) => setTimeout(r, 2000));
-      toast.success("Order confirmed successfully!");
+      if (mode === "BAR" && total < 2500) {
+        throw new Error("Minimum bar spend is KES 2,500");
+      }
+      
+      setProcessing(true);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      
+      toast.success("Order Successful!", { description: "Your items are being prepared." });
       setOrderItems([]);
       setShowReceipt(false);
-    } catch (e) {
-      toast.error("Payment failed. Please try again.");
+    } catch (err: any) {
+      toast.error("Order Failed", { description: err.message });
     } finally {
       setProcessing(false);
     }
   };
 
-  /* ---------- SUB-COMPONENTS ---------- */
-
-  const SkeletonItem = () => (
-    <div className="flex items-center gap-4 border-b border-white/5 pb-4 animate-pulse">
-      <div className="w-20 h-20 md:w-24 md:h-24 bg-white/10 rounded-xl" />
-      <div className="flex-1 space-y-2">
-        <div className="h-4 bg-white/10 rounded w-3/4" />
-        <div className="h-3 bg-white/10 rounded w-1/4" />
-      </div>
-      <div className="w-10 h-10 rounded-full bg-white/10" />
-    </div>
-  );
-
   return (
     <>
-      <Toaster position="top-center" richColors />
-      <div className={`min-h-screen transition-colors duration-500 ${goldTheme ? "bg-black text-white" : "bg-zinc-900 text-white"} pb-32`}>
-        
-        {/* NAVBAR */}
-        <nav className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-white/10">
-          <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <h1 className="uppercase tracking-[0.3em] font-bold text-lg">Bills Lounge</h1>
-            
-            <div className="hidden md:flex items-center gap-8 text-[10px] uppercase tracking-[0.2em]">
-              <a href="#" className="hover:text-amber-400 transition">Menu</a>
-              <a href="#" className="hover:text-amber-400 transition">Reservations</a>
-              <a href="#" className="hover:text-amber-400 transition">Events</a>
-              <button onClick={() => setGoldTheme(!goldTheme)} className="border border-white/20 px-3 py-1 rounded">
-                {goldTheme ? "Gold" : "Classic"}
-              </button>
-            </div>
+      <Toaster richColors position="top-center" theme="dark" />
+      <div className="min-h-screen bg-[#0a0a0a] text-[#f5f5f5] pb-40 font-sans">
 
-            <div className="flex items-center gap-4 md:hidden">
-                <button onClick={() => setIsNavOpen(!isNavOpen)}>
-                    {isNavOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
-            </div>
-          </div>
+        {/* HEADER */}
+        <header className="pt-12 pb-6 px-6 text-center">
+          <span className="text-[#c6a96a] text-[10px] uppercase tracking-[0.4em] mb-2 block">Premium Experience</span>
+          <h1 className="text-4xl md:text-5xl font-serif uppercase tracking-widest font-bold">Bills Lounge</h1>
+        </header>
 
-          {/* MOBILE NAV */}
-          <AnimatePresence>
-            {isNavOpen && (
-              <motion.div 
-                initial={{ height: 0, opacity: 0 }} 
-                animate={{ height: "auto", opacity: 1 }} 
-                exit={{ height: 0, opacity: 0 }}
-                className="md:hidden border-t border-white/10 bg-black overflow-hidden"
-              >
-                <div className="flex flex-col p-6 gap-4 text-xs uppercase tracking-widest">
-                    <a href="#" onClick={() => setIsNavOpen(false)}>Menu</a>
-                    <a href="#" onClick={() => setIsNavOpen(false)}>Reservations</a>
-                    <button onClick={() => {setGoldTheme(!goldTheme); setIsNavOpen(false)}} className="text-left">
-                        Theme: {goldTheme ? "Gold" : "Classic"}
-                    </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </nav>
-
-        {/* MODE SWITCH */}
-        <div className="mt-8 flex justify-center px-4">
-          <div className="flex w-full max-w-xs bg-white/5 border border-white/10 rounded-xl p-1">
-            {(["KITCHEN", "BAR"] as OrderMode[]).map((m) => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                className={`flex-1 py-3 text-[10px] md:text-xs uppercase tracking-widest rounded-lg transition-all ${
-                  mode === m ? "bg-amber-400 text-black font-bold" : "opacity-40 hover:opacity-100"
+        {/* MODE SWITCHER */}
+        <div className="flex justify-center mb-8">
+          <div className="flex bg-white/5 border border-white/10 rounded-full p-1 backdrop-blur-sm">
+            {(["KITCHEN", "BAR"] as OrderMode[]).map(m => (
+              <button key={m} onClick={() => setMode(m)}
+                className={`px-8 py-2 text-[11px] uppercase tracking-widest rounded-full transition-all ${
+                  mode === m ? "bg-[#D4AF37] text-black font-bold" : "opacity-40 hover:opacity-100"
                 }`}
-              >
-                {m}
-              </button>
+              >{m}</button>
             ))}
           </div>
         </div>
 
-        {/* CATEGORIES - HORIZONTAL SCROLL */}
-        <div className="flex gap-3 px-4 py-8 overflow-x-auto no-scrollbar scroll-smooth">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
+        {/* CATEGORY NAV */}
+        <div className="flex gap-4 px-6 mb-10 overflow-x-auto no-scrollbar justify-start md:justify-center">
+          {categories.map(cat => (
+            <button key={cat} onClick={() => setActiveCategory(cat)}
               className={`whitespace-nowrap px-6 py-2 rounded-full text-[10px] uppercase tracking-widest border transition-all ${
-                activeCategory === cat ? "border-amber-400 text-amber-400 bg-amber-400/10" : "border-white/20 opacity-40 hover:opacity-100"
+                activeCategory === cat ? "border-[#c6a96a] text-[#c6a96a] bg-[]/10" : "border-white/5 opacity-40"
               }`}
-            >
-              {cat}
-            </button>
+            >{cat}</button>
           ))}
         </div>
 
-        {/* MAIN CONTENT AREA */}
-        <main className="max-w-5xl mx-auto px-4">
+        {/* MAIN FEED */}
+        <motion.main className="max-w-4xl mx-auto px-6">
           {loading ? (
-            <div className="grid md:grid-cols-2 gap-8">
-              {[1, 2, 3, 4].map((i) => <SkeletonItem key={i} />)}
+            <div className="flex flex-col items-center justify-center py-20 opacity-20">
+              <Loader2 className="animate-spin mb-4" size={32} />
+              <p className="uppercase text-[10px] tracking-widest">Refreshing Menu...</p>
             </div>
-          ) : error ? (
-            <div className="text-center py-20">
-              <AlertCircle className="mx-auto mb-4 text-red-500" size={48} />
-              <p className="text-sm opacity-70 mb-6">{error}</p>
-              <button 
-                onClick={() => window.location.reload()}
-                className="px-8 py-3 border border-amber-400 text-amber-400 text-xs uppercase"
-              >
-                Retry Loading
-              </button>
+          ) : items.length === 0 ? (
+            <div className="text-center py-20 border border-dashed border-white/10 rounded-3xl bg-white/[0.02]">
+              <Wine className="mx-auto text-[#c6a96a]/20 mb-4" size={48} />
+              <h3 className="text-[#D4AF37] font-serif italic text-xl">Not available at the moment</h3>
+              <p className="text-[10px] uppercase tracking-widest opacity-40 mt-2">Please check back later</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
+            <div className="grid md:grid-cols-2 gap-8">
               <AnimatePresence mode="popLayout">
-                {items.map((item) => (
-                  <motion.div
-                    key={item.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    className="flex items-center gap-4 border-b border-white/5 pb-6 group"
-                  >
-                    <div className="relative overflow-hidden rounded-xl">
-                        <img src={item.image} className="w-20 h-20 md:w-28 md:h-28 object-cover transition-transform duration-500 group-hover:scale-110" alt={item.name} />
-                    </div>
+                {items.map(item => (
+                  <motion.div key={item.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-[#c6a96a]/30 transition-all group">
+                    <img src={item.image} className="w-20 h-20 rounded-xl object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all" />
                     <div className="flex-1">
-                      <p className="font-semibold text-sm md:text-base">{item.name}</p>
-                      <p className="text-xs text-amber-400/80 mt-1">
-                        KES {item.price.toLocaleString()}
-                      </p>
+                      <h4 className="text-sm font-bold uppercase tracking-wide">{item.name}</h4>
+                      <p className="text-[#D4AF37] text-xs mt-1 font-mono">KES {item.price.toLocaleString()}</p>
                     </div>
-                    <button
-                      onClick={() => addItem(item)}
-                      className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-black transition-all flex items-center justify-center"
-                    >
+                    <button onClick={() => addItem(item)}
+                      className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#c6a96a] hover:text-black transition-all font-bold">
                       +
                     </button>
                   </motion.div>
@@ -262,91 +179,58 @@ const MenuPage: React.FC = () => {
               </AnimatePresence>
             </div>
           )}
-        </main>
+        </motion.main>
 
-        {/* CHECKOUT BAR */}
+        {/* FLOATING ACTION BAR */}
         <AnimatePresence>
-            {orderItems.length > 0 && (
-            <motion.div 
-                initial={{ y: 100 }} 
-                animate={{ y: 0 }} 
-                exit={{ y: 100 }}
-                className="fixed bottom-0 left-0 right-0 z-40 bg-zinc-900 text-amber-400 px-6 py-4 md:py-6 flex justify-between items-center shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
-            >
-                <div className="flex items-center gap-3">
-                    <div className="bg-black text-white w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold">
-                        {orderItems.reduce((a, b) => a + b.quantity, 0)}
-                    </div>
-                    <p className="font-black text-lg">KES {total.toLocaleString()}</p>
-                </div>
-                <button
-                onClick={() => setShowReceipt(true)}
-                className="bg-black text-white px-6 py-3 rounded-lg uppercase tracking-widest text-[10px] font-bold flex items-center gap-2"
-                >
-                <ShoppingBag size={14} /> Review Order
+          {orderItems.length > 0 && (
+            <motion.div initial={{ y: 100, x: "-50%" }} animate={{ y: 0, x: "-50%" }} exit={{ y: 100, x: "-50%" }}
+              className="fixed bottom-8 left-1/2 z-50 w-[90%] max-w-md bg-[#161616] border border-white/10 rounded-2xl p-4 shadow-2xl flex items-center justify-between">
+              <div>
+                <p className="text-[10px] uppercase opacity-40 tracking-widest">Total Order</p>
+                <p className="text-xl font-serif text-[#D4AF37] font-bold">KES {total.toLocaleString()}</p>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setOrderItems([])} className="p-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors">
+                  <Trash2 size={18} />
                 </button>
-            </motion.div>
-            )}
-        </AnimatePresence>
-
-        {/* RECEIPT MODAL */}
-        <AnimatePresence>
-          {showReceipt && (
-            <motion.div
-              className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <motion.div
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                className="bg-white text-black w-full max-w-md rounded-2xl p-8 font-mono shadow-2xl"
-              >
-                <div className="flex justify-between items-start mb-8">
-                    <div>
-                        <h2 className="text-xl font-bold uppercase tracking-tighter">Your Order</h2>
-                        <p className="text-[10px] opacity-50 uppercase mt-1">Table Service • Bills Lounge</p>
-                    </div>
-                    <button onClick={() => setShowReceipt(false)} className="p-2 hover:bg-gray-100 rounded-full transition">
-                        <X size={20} />
-                    </button>
-                </div>
-
-                <div className="space-y-4 max-h-[40vh] overflow-y-auto mb-6 pr-2">
-                    {orderItems.map((i) => (
-                    <div key={i.id} className="flex justify-between items-center text-sm border-b border-gray-100 pb-2">
-                        <div className="flex-1">
-                            <span className="font-bold">{i.quantity}x</span> {i.name}
-                        </div>
-                        <div className="flex items-center gap-4">
-                        <span className="font-bold">{(i.price * i.quantity).toLocaleString()}</span>
-                        <button onClick={() => removeItem(i.id)} className="w-6 h-6 rounded-full border border-black flex items-center justify-center hover:bg-black hover:text-white transition">
-                            −
-                        </button>
-                        </div>
-                    </div>
-                    ))}
-                </div>
-
-                <div className="border-t-2 border-dashed border-gray-200 pt-4 flex justify-between items-end">
-                  <span className="text-xs uppercase">Total Amount</span>
-                  <span className="text-2xl font-black">KES {total.toLocaleString()}</span>
-                </div>
-
-                <button
-                  disabled={processing}
-                  onClick={confirmOrder}
-                  className="w-full mt-8 bg-black text-white py-4 rounded-xl uppercase tracking-widest text-xs font-bold flex items-center justify-center gap-3 disabled:opacity-70"
-                >
-                  {processing ? (
-                    <><Loader2 className="animate-spin" size={16} /> Securely Processing...</>
-                  ) : "Confirm & Pay Now"}
+                <button onClick={() => setShowReceipt(true)}
+                  className="bg-[#D4AF37] text-black px-6 py-3 rounded-xl text-[11px] font-bold uppercase tracking-widest flex items-center gap-2">
+                  Review Order <ChevronRight size={14} />
                 </button>
-              </motion.div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* REVIEW MODAL */}
+        {showReceipt && (
+          <div className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-sm flex items-center justify-center p-6">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+              className="bg-[#1a1a1a] w-full max-w-sm rounded-3xl p-8 border border-white/10">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-xl font-serif italic text-[#c6a96a]">Your Order</h2>
+                <button onClick={() => setShowReceipt(false)} className="opacity-50 hover:opacity-100"><X /></button>
+              </div>
+              <div className="space-y-4 max-h-60 overflow-y-auto mb-8 pr-2">
+                {orderItems.map(item => (
+                  <div key={item.id} className="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+                    <span className="opacity-80">{item.quantity}x {item.name}</span>
+                    <span className="font-mono">{(item.price * item.quantity).toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between items-center mb-8 pt-4 border-t border-white/10">
+                <span className="uppercase text-xs tracking-widest opacity-50">Grand Total</span>
+                <span className="text-xl font-serif font-bold text-[#D4AF37]">KES {total.toLocaleString()}</span>
+              </div>
+              <button disabled={processing} onClick={confirmOrder}
+                className="w-full bg-[#D4AF37] text-black py-4 rounded-xl text-xs font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-3">
+                {processing ? <Loader2 className="animate-spin" size={18} /> : "Confirm & Send"}
+              </button>
+            </motion.div>
+          </div>
+        )}
       </div>
     </>
   );

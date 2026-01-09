@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { Link } from 'react-router';
 
 
 const LandingScreen: React.FC = () => {
@@ -57,12 +58,12 @@ const LandingScreen: React.FC = () => {
           transition={{ delay: 1.5 }}
           className="flex flex-col md:flex-row gap-4 w-full md:w-auto"
         >
-          <a href='/menu' className="px-10 py-4 bg-white text-black hover:bg-amber-500 hover:text-white transition-all duration-300 uppercase tracking-widest text-xs font-bold font-sans text-center">
+          <Link to= '/menu' className="px-10 py-4 bg-white text-black hover:bg-amber-500 hover:text-white transition-all duration-300 uppercase tracking-widest text-xs font-bold font-sans text-center">
             View Menu
-          </a>
-          <a href='/reserve' className="px-10 py-4 border border-white/30 hover:border-white transition-all duration-300 uppercase tracking-widest text-xs font-bold font-sans text-center">
+          </Link>
+          <Link to = '/reserve' className="px-10 py-4 border border-white/30 hover:border-white transition-all duration-300 uppercase tracking-widest text-xs font-bold font-sans text-center">
             Reserve Table
-          </a>
+          </Link>
         </motion.div>
       </main>
       

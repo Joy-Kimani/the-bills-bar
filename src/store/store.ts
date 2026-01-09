@@ -3,6 +3,7 @@ import { AuthApi } from '../features/api/AuthApi'
 import authSlice from '../features/slice/AuthSlice'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import { AdminApi } from '../features/api/AdminApi';
 
 // configure the Redux store
 const authPersistConfig = {
@@ -19,6 +20,7 @@ export const store = configureStore({
     reducer: {
         // Add the AuthApi reducer
         [AuthApi.reducerPath]: AuthApi.reducer,
+        [AdminApi.reducerPath]: AdminApi.reducer,
         
 
         //add the auth slice reducer
@@ -29,7 +31,7 @@ export const store = configureStore({
             serializableCheck: {
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
-        }).concat(AuthApi.middleware),
+        }).concat(AuthApi.middleware, AdminApi.middleware),
 })
 
 //export the persisted store

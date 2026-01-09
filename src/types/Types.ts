@@ -7,13 +7,13 @@ export type UserFormValues = {
 }
 
 
-export type OrderFormValues = {
-    restaurant_id: number;
-    customer_id: number;
-    menu_item_id: number;
-    total_amount: number;
-    order_type: 'dine_in' | 'takeaway' | 'delivery'
-}
+// export type OrderFormValues = {
+//     restaurant_id: number;
+//     customer_id: number;
+//     menu_item_id: number;
+//     total_amount: number;
+//     order_type: 'dine_in' | 'takeaway' | 'delivery'
+// }
 
 export interface User {
     user_id: number;
@@ -27,15 +27,16 @@ export interface User {
 
 
 export interface MenuItem {
-    menu_item_id: number;
-    name: string;
-    description: string;
-    category_name: string;
-    price: number;
-    menuitem_image_url: string;
-    is_available: boolean;
-    quantity: number;
-    prepared_time: number;
+  id: number;
+  name: string;
+  description: string | null;
+  price: number;
+  category: string;
+  image_url: string | null;
+  popular: boolean;
+  is_available: boolean;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface Category {
@@ -49,8 +50,8 @@ export interface Category {
 export interface AdminDashboardStats {
     totalOrders: number;
     totalRevenue: number;
-    totalCustomers: number;
     totalMenuItems: number;
+    totalReservations: number;
 }
 
 export interface UserStats {
@@ -87,4 +88,22 @@ export interface RecentOrder {
     amount: number;
     status: 'Delivered' | 'Preparing' | 'Ready' | 'Cancelled';
     time: string;
+}
+
+export interface Order{
+    id: number;
+    table_id: number | null;
+    total: number;
+    payment_method: 'CASH' | 'MOBILE';
+    status: 'PENDING' | 'PAID' | 'COMPLETED' | 'CANCELLED';
+    created_at: string;
+}
+
+export type OrderFormValues = {
+    id: number;
+    table_id: number | null;
+    total: number;
+    payment_method: 'CASH' | 'MOBILE';
+    status: 'PENDING' | 'PAID' | 'COMPLETED' | 'CANCELLED';
+    created_at: string;
 }

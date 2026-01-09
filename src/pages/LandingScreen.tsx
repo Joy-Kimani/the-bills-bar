@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router';
 
 const LandingScreen:React.FC = () => {
   return (
@@ -22,8 +23,8 @@ const LandingScreen:React.FC = () => {
         <h2 className="text-2xl font-bold tracking-[0.3em] uppercase">Bills Lounge & Grill</h2>
         <div className="hidden md:flex space-x-8 text-sm uppercase tracking-widest font-sans opacity-80">
           <a href="/menu" className="hover:text-gold transition">Menu</a>
-          <a href="#" className="hover:text-gold transition">Events</a>
-          <a href="#" className="hover:text-gold transition">Reserve Table</a>
+          <a href="/events" className="hover:text-gold transition">Events</a>
+          <a href="/reserve" className="hover:text-gold transition">Reserve Table</a>
         </div>
       </nav>
       
@@ -52,7 +53,7 @@ const LandingScreen:React.FC = () => {
           transition={{ delay: 1.2 }}
           className="text-sm md:text-base opacity-70 mb-10 font-sans"
         >
-          Scan the menu, place your order, and enjoy. Pay at the counter or via mobile money.
+          Scan the menu, place your order and enjoy. Pay at the counter or via mobile money.
         </motion.p>
       
         <motion.div
@@ -61,11 +62,12 @@ const LandingScreen:React.FC = () => {
           transition={{ delay: 1.5 }}
           className="flex flex-col md:flex-row gap-6"
         >
-          <button className="px-10 py-4 bg-white text-black hover:bg-gold hover:text-white transition-all duration-300 uppercase tracking-widest text-xs font-bold font-sans">
-            View Menu
+          <button className="px-10 py-4 bg-white text-black hover:bg-amber-500 hover:text-white transition-all duration-300 uppercase tracking-widest text-xs font-bold font-sans">
+            
+            <a href='/menu'>View Menu</a>
           </button>
           <button className="px-10 py-4 border border-white/30 hover:border-white transition-all duration-300 uppercase tracking-widest text-xs font-bold font-sans">
-            Reserve Table
+            <a href='/reserve'>Reserve Table</a>
           </button>
         </motion.div>
       </main>

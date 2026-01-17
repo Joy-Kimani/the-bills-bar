@@ -1,158 +1,217 @@
 import React from "react";
 import AdminDashboardLayout from "../../dashboard/AdminDashboardLayout";
 import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
   CartesianGrid,
-  Area,
-  AreaChart,
+  Tooltip,
+  BarChart,
+  Bar,
 } from "recharts";
-import { TrendingUp, ShoppingBag, CreditCard, ArrowUpRight } from "lucide-react";
+import {
+  CreditCard,
+  ShoppingBag,
+  TrendingUp,
+  Users,
+  CalendarDays,
+  ArrowUpRight,
+} from "lucide-react";
 
-const DATA = [
-  { day: "Mon", revenue: 12000 },
-  { day: "Tue", revenue: 18000 },
-  { day: "Wed", revenue: 9000 },
-  { day: "Thu", revenue: 22000 },
-  { day: "Fri", revenue: 30000 },
+/* -----------------------------
+   MOCK DATA (Replace with API)
+------------------------------ */
+
+const revenueTrend = [
+  { label: "Mon", revenue: 12000 },
+  { label: "Tue", revenue: 18000 },
+  { label: "Wed", revenue: 9000 },
+  { label: "Thu", revenue: 22000 },
+  { label: "Fri", revenue: 30000 },
 ];
 
-const STATS = [
-  { 
-    label: "Total Revenue", 
-    value: "KES 145,000", 
-    icon: <CreditCard className="text-emerald-400" size={20} />,
+const ordersByCategory = [
+  { category: "Kitchen", orders: 58 },
+  { category: "Bar", orders: 92 },
+];
+
+const kpis = [
+  {
+    label: "Today’s Revenue",
+    value: "KES 145,000",
     trend: "+12.5%",
-    color: "bg-emerald-500/10"
+    icon: <CreditCard />,
+    accent: "emerald",
   },
-  { 
-    label: "Orders Today", 
-    value: "38", 
-    icon: <ShoppingBag className="text-indigo-400" size={20} />,
-    trend: "+5.2%",
-    color: "bg-indigo-500/10"
+  {
+    label: "Total Orders Today",
+    value: "150",
+    trend: "+8.2%",
+    icon: <ShoppingBag />,
+    accent: "indigo",
   },
-  { 
-    label: "Avg Order Value", 
-    value: "KES 3,800", 
-    icon: <TrendingUp className="text-amber-400" size={20} />,
+  {
+    label: "Avg Order Value",
+    value: "KES 3,800",
     trend: "-2.1%",
-    color: "bg-amber-500/10"
+    icon: <TrendingUp />,
+    accent: "amber",
+  },
+  {
+    label: "Active Tables",
+    value: "18 / 24",
+    trend: "+3",
+    icon: <Users />,
+    accent: "sky",
+  },
+  {
+    label: "Event Revenue",
+    value: "KES 42,000",
+    trend: "+18%",
+    icon: <CalendarDays />,
+    accent: "purple",
   },
 ];
+
+/* -----------------------------
+   COMPONENT
+------------------------------ */
 
 const Analytics: React.FC = () => {
   return (
     <AdminDashboardLayout>
-      <div className="p-8 max-w-7xl mx-auto space-y-8">
-        {/* Header Section */}
+      <div className="p-8 max-w-7xl mx-auto space-y-10">
+
+        {/* Header */}
         <header>
-          <h1 className="text-3xl font-bold text-white tracking-tight">
-            Business Analytics
-          </h1>
-          <p className="text-gray-400 mt-1">Real-time performance tracking for your restaurant.</p>
+          <h1 className="text-3xl font-bold text-white">Admin Overview</h1>
+          <p className="text-gray-400 mt-1">
+            Executive snapshot of today’s business performance
+          </p>
         </header>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {STATS.map((stat) => (
+        {/* KPIs */}
+        <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
+          {kpis.map((kpi) => (
             <div
-              key={stat.label}
-              className="group relative bg-gray-900 border border-gray-800 hover:border-gray-700 transition-all duration-300 rounded-2xl p-6 overflow-hidden"
+              key={kpi.label}
+              className="relative bg-gray-900 border border-gray-800 rounded-2xl p-5 overflow-hidden"
             >
-              {/* Decorative background glow */}
-              <div className={`absolute -right-4 -top-4 w-24 h-24 blur-3xl opacity-20 rounded-full ${stat.color}`} />
-              
+              <div
+                className={`absolute -top-6 -right-6 w-24 h-24 bg-${kpi.accent}-500/10 blur-3xl`}
+              />
+
               <div className="flex justify-between items-start">
-                <div className={`p-3 rounded-xl ${stat.color}`}>
-                  {stat.icon}
+                <div className={`p-3 rounded-xl bg-${kpi.accent}-500/10 text-${kpi.accent}-400`}>
+                  {kpi.icon}
                 </div>
-                <span className={`flex items-center text-xs font-medium ${stat.trend.startsWith('+') ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {stat.trend} <ArrowUpRight size={14} className="ml-1" />
+                <span
+                  className={`flex items-center text-xs font-medium ${
+                    kpi.trend.startsWith("+")
+                      ? "text-emerald-400"
+                      : "text-rose-400"
+                  }`}
+                >
+                  {kpi.trend}
+                  <ArrowUpRight size={14} className="ml-1" />
                 </span>
               </div>
 
-              <div className="mt-4">
-                <p className="text-gray-400 text-sm font-medium">{stat.label}</p>
-                <p className="text-3xl font-bold text-white mt-1">{stat.value}</p>
-              </div>
+              <p className="text-gray-400 text-sm mt-4">{kpi.label}</p>
+              <p className="text-2xl font-bold text-white mt-1">{kpi.value}</p>
             </div>
           ))}
-        </div>
+        </section>
 
-        {/* Main Chart Section */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-            <div>
-              <h2 className="text-xl font-bold text-white">Weekly Revenue Trend</h2>
-              <p className="text-gray-400 text-sm">Revenue distribution over the last 5 days</p>
-            </div>
-            <div className="flex gap-2 bg-gray-800 p-1 rounded-lg">
-              <button className="px-3 py-1 text-xs font-medium bg-gray-700 text-white rounded-md shadow-sm">Revenue</button>
-              <button className="px-3 py-1 text-xs font-medium text-gray-400 hover:text-white transition-colors">Orders</button>
+        {/* Charts + Insights */}
+        <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+          {/* Revenue Trend */}
+          <div className="xl:col-span-2 bg-gray-900 border border-gray-800 rounded-2xl p-6">
+            <h2 className="text-lg font-semibold text-white mb-1">
+              Revenue Over Time
+            </h2>
+            <p className="text-gray-400 text-sm mb-6">
+              Daily revenue performance
+            </p>
+
+            <div className="h-[320px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={revenueTrend}>
+                  <defs>
+                    <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+
+                  <CartesianGrid stroke="#1f2937" vertical={false} />
+                  <XAxis dataKey="label" tick={{ fill: "#94a3b8" }} />
+                  <YAxis
+                    tick={{ fill: "#94a3b8" }}
+                    tickFormatter={(v) => `KES ${v / 1000}k`}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#020617",
+                      border: "1px solid #1f2937",
+                      borderRadius: 12,
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#10b981"
+                    fill="url(#rev)"
+                    strokeWidth={3}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="h-[350px] w-full">
+          {/* Insights Panel */}
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 space-y-4">
+            <h2 className="text-lg font-semibold text-white">Insights</h2>
+
+            <div className="bg-gray-800/50 rounded-xl p-4 text-sm text-gray-300">
+              🔥 Peak hours today: <strong>8:00 PM – 10:00 PM</strong>
+            </div>
+
+            <div className="bg-gray-800/50 rounded-xl p-4 text-sm text-gray-300">
+              🍸 Bar revenue exceeds kitchen by <strong>22%</strong>
+            </div>
+
+            <div className="bg-gray-800/50 rounded-xl p-4 text-sm text-gray-300">
+              🎉 Event nights increase AOV by <strong>45%</strong>
+            </div>
+          </div>
+        </section>
+
+        {/* Orders by Category */}
+        <section className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+          <h2 className="text-lg font-semibold text-white mb-6">
+            Orders by Category
+          </h2>
+
+          <div className="h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={DATA}>
-                <defs>
-                  <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1f2937" />
-                <XAxis 
-                  dataKey="day" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#94a3b8', fontSize: 12 }}
-                  dy={10}
-                />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#94a3b8', fontSize: 12 }}
-                  tickFormatter={(val) => `KSh ${val / 1000}k`}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#111827', 
-                    border: '1px solid #374151', 
-                    borderRadius: '12px',
-                    color: '#fff' 
-                  }}
-                  itemStyle={{ color: '#10b981' }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  fillOpacity={1}
-                  fill="url(#colorRev)"
-                />
-              </AreaChart>
+              <BarChart data={ordersByCategory}>
+                <CartesianGrid stroke="#1f2937" vertical={false} />
+                <XAxis dataKey="category" tick={{ fill: "#94a3b8" }} />
+                <YAxis tick={{ fill: "#94a3b8" }} />
+                <Tooltip />
+                <Bar dataKey="orders" radius={[8, 8, 0, 0]} />
+              </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </section>
+
       </div>
     </AdminDashboardLayout>
   );
 };
 
 export default Analytics;
-
-
-// 🔔 Toasts (“Reservation Confirmed”)
-
-// 🕒 Real countdown timers to expiry
-
-// 📊 Admin dashboard KPIs
-
-// 🔐 Role-based visibility (Admin vs Staff)
-
-// 🔄 WebSocket real-time updates

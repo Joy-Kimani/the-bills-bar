@@ -1,4 +1,4 @@
-import { BarChart, Clipboard, ShoppingCart, StoreIcon, User, Users, Menu, X } from 'lucide-react'
+import { BarChart, Clipboard, ShoppingCart, StoreIcon, User, Users, Menu, X, House } from 'lucide-react'
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router'
 
@@ -9,18 +9,21 @@ const AdminSidebar: React.FC = () => {
     const isActive = (path: string) => location.pathname === path
 
     const navigationItems = [
-        { name: 'Analytics', path: '/admin/dashboard', icon: <BarChart size={20} /> },
-        { name: 'All Orders', path: '/admin/dashboard/all-orders', icon: <ShoppingCart size={20} /> },
-        { name: 'Menu Items', path: '/admin/dashboard/all-menu-items', icon: <Clipboard size={20} /> },
-        { name: 'All Customers', path: '/admin/dashboard/all-customers', icon: <Users size={20} /> },
-        { name: 'All Restaurants', path: '/admin/dashboard/all-restaurants', icon: <StoreIcon size={20} /> },
-        { name: 'Admin Profile', path: '/admin/dashboard/admin-profile', icon: <User size={20} /> }
+        { name: 'Overview', path: '/admin/overview', icon: <House size={20} /> },
+        { name: 'Analytics', path: '/admin/analytics', icon: <BarChart size={20} /> },
+        { name: 'All Orders', path: '/admin/orders', icon: <ShoppingCart size={20} /> },
+        { name: 'Menu Items', path: '/admin/menu', icon: <Clipboard size={20} /> },
+        { name: 'Events Management', path: '/admin/events', icon: <StoreIcon size={20} /> },
+        { name: 'All Staff', path: '/admin/staff', icon: <Users size={20} /> },
+        { name: 'All Tables', path: '/admin/tables', icon: <StoreIcon size={20} /> },
+        { name: 'Admin Profile', path: '/admin/admin-profile', icon: <User size={20} /> }
     ]
 
     return (
         <>
             {/* --- Mobile Trigger (Top Bar) --- */}
-            <div className="lg:hidden fixed top-0 left-0 w-full bg-black border-b border-gray-800 p-4 flex items-center justify-between z-50">
+            <div className="bg-black border-r border-zinc-800 transition-all duration-300 
+    w-64 h-screen fixed left-0 top-0 z-40 flex items-center justify-between p-4 lg:hidden">
                 <h1 className="text-lg font-bold text-green-500">Admin Panel</h1>
                 <button 
                     onClick={() => setIsOpen(!isOpen)}

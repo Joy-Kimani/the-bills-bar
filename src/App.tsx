@@ -10,6 +10,7 @@ import StaffManagement from './pages/Admin.tsx/StaffManagement'
 import ReservedTables from './pages/Admin.tsx/ReservedTables'
 import MenuItems from './pages/Admin.tsx/MenuItems'
 import AllOrders from './pages/Admin.tsx/AllOrders'
+import AllEvents from './pages/Admin.tsx/AllEvents'
 
 function App() {
 
@@ -58,6 +59,10 @@ function App() {
     {
       path: '/admin/orders',
       element: <AllOrders/>
+    },
+    {
+       path: '/admin/events',
+      element: <AllEvents/>
     }
 
   ])
